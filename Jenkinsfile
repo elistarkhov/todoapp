@@ -32,9 +32,15 @@ pipeline {
         stage('Push Docker image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                sh "docker login -u ${env.dockerHubUser} --password-stdin ${env.dockerHubPassword}"
+                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
                 sh 'docker push elistarkhov/todoapp:v1'
                 }
+            }
+        }
+
+        stage('Clear local registry') {
+            steps {
+                sh 'docker rmi -f elistarkhov/todoapp:v1'
             }
         }
     }
