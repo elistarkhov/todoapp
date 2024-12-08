@@ -3,9 +3,8 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone and Build project') {
+        stage('Build project') {
             steps {
-                git 'git@github.com:elistarkhov/todoapp.git'
                 sh 'mvn clean package -DskipTests' 
             }
         }
