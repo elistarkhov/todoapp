@@ -1,11 +1,16 @@
 
+def TODOAPP_VERSION
+
 pipeline {
     agent any
-
+    triggers { pollSCM('* * * * *') }
     stages {
         stage('Build project') {
             steps {
                 sh 'mvn clean package -DskipTests' 
+                script {
+                    TODOAPP_VERSION = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true  
+                }
             }
         }
 
@@ -26,23 +31,24 @@ pipeline {
 
         stage('Build Docker image') {
             steps {
-                sh 'docker build -t elistarkhov/todoapp:v1 .'
+                sh "docker build -t elistarkhov/todoapp:${TODOAPP_VERSION} ."
             }
         }
         stage('Push Docker image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                sh 'docker push elistarkhov/todoapp:v1'
+                sh "docker push elistarkhov/todoapp:${TODOAPP_VERSION}"
                 }
             }
         }
 
-        stage('Clear local registry') {
+        stage('Clear docker local registry') {
             steps {
-                sh 'docker rmi -f elistarkhov/todoapp:v1'
+                sh "docker rmi -f elistarkhov/todoapp:${TODOAPP_VERSION}"
             }
         }
     }
 }
+
 
