@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOGS" value="${catalina.home}/logs" />
+<!--=========================================================================================-->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable
+            </pattern>
+        </encoder>
+    </appender>
+<!--=========================================================================================-->
+    <appender name="File" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/app.log</file>
+
+        <encoder>
+            <pattern>%d %p %C{1} [%t] %m%n</pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily and when the file reaches 100 MegaBytes -->
+            <fileNamePattern>${LOGS}/archived/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>40</maxHistory>
+        </rollingPolicy>
+    </appender>
+<!--=========================================================================================-->
+    <root>
+        <appender-ref ref="File" />
+        <appender-ref ref="Console" />
+    </root>
+
+    <logger name="io.demo.todoapp" level="DEBUG"/>
+
+    <logger name="org.springframework" level="INFO"/>
+
+    <logger name="org.thymeleaf.TemplateEngine" level="INFO"/>
+
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+
+    <logger name="org.flywaydb.core" level="INFO"/>
+
+    <logger name="org.hibernate" level="WARN"/>
+
+
+</configuration>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}"
+        th:rel="stylesheet" media="screen"/>
+  <script src="http://cdn.jsdelivr.net/webjars/jquery/3.7.1/jquery.min.js"
+          th:src="@{/webjars/jquery/3.7.1/jquery.min.js}"></script>
+
+  <title>TODO List</title>
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}">Header</div>
+
+<div class="container">
+  <div class="text-left">
+
+    <h1>TODO List</h1>
+    <h3 th:if="${todos.empty}">No TODOs yet</h3>
+
+        <div class="lead" th:if="${!todos.empty}">
+          <table class="table table-striped">
+            <tr>
+              <th>Title</th>
+              <th>Content</th>
+              <th>Completed</th>
+              <th>Created Date</th>
+              <th>Modified Date</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+            <tr th:each="todo : ${todos}">
+              <td th:text="${todo.title}">title</td>
+              <td th:text="${todo.content}">content</td>
+              <td th:text="${todo.completed}">completed</td>
+              <td th:text="${todo.createdAt}">created</td>
+              <td th:text="${todo.updatedAt}">updated</td>
+              <td><a th:href="@{/edit/{id}(id=${todo.id})}">Edit</a></td>
+              <td><a th:href="@{/delete/{id}(id=${todo.id})}">Delete</a></td>
+            </tr>
+          </table>
+        </div>
+  </div>
+</div>
+
+</body>
+</html>
