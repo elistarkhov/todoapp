@@ -58,13 +58,13 @@ pipeline {
                         credentialsId: 'github-deploy-key',
                         url: "${CD_REPO}"
 
-                    def values = readYaml file: 'HelmCharts/MyChart/values.yaml'
+                    def values = readYaml file: 'HelmCharts/AppChart/values.yaml'
                     values.container.image = "${APP_IMAGE}:${TODOAPP_VERSION}-TEST3"
-                    writeYaml file: 'HelmCharts/MyChart/values.yaml', data: values, overwrite: true
+                    writeYaml file: 'HelmCharts/AppChart/values.yaml', data: values, overwrite: true
                 }
                 sshagent (credentials: ['github-deploy-key']) {
                     sh """
-                        git add HelmCharts/MyChart/values.yaml
+                        git add HelmCharts/AppChart/values.yaml
                         git commit -m "[Jenkins] Updated docker image tag - ${TODOAPP_VERSION}"
                         git push "${CD_REPO}" main
                     """

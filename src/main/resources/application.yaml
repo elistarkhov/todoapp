@@ -1,0 +1,15 @@
+
+spring:
+  main:
+    banner-mode: off
+  jpa:
+    show-sql: false
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    name: mainDS
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  flyway:
+    enabled: true
