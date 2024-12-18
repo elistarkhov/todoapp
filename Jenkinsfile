@@ -59,7 +59,7 @@ pipeline {
                         url: "${CD_REPO}"
 
                     def values = readYaml file: 'HelmCharts/AppChart/values.yaml'
-                    values.container.image = "${APP_IMAGE}:${TODOAPP_VERSION}-TEST3"
+                    values.container.image = "${APP_IMAGE}:${TODOAPP_VERSION}"
                     writeYaml file: 'HelmCharts/AppChart/values.yaml', data: values, overwrite: true
                 }
                 sshagent (credentials: ['github-deploy-key']) {
