@@ -1,9 +1,11 @@
 
 def TODOAPP_VERSION
+def APP_IMAGE = 'elistarkhov/todoapp'
+def CD_REPO = 'git@github.com:elistarkhov/todoapp-argocd.git'
 
 pipeline {
     agent any
-    triggers { pollSCM('* * * * *') }
+
     stages {
         stage('Build project') {
             steps {
@@ -31,21 +33,42 @@ pipeline {
 
         stage('Build Docker image') {
             steps {
-                sh "docker build -t elistarkhov/todoapp:${TODOAPP_VERSION} ."
+                sh "docker build -t ${APP_IMAGE}:${TODOAPP_VERSION} ."
             }
         }
         stage('Push Docker image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                sh "docker push elistarkhov/todoapp:${TODOAPP_VERSION}"
+                sh "docker push ${APP_IMAGE}:${TODOAPP_VERSION}"
                 }
             }
         }
 
-        stage('Clear docker local registry') {
+        stage('Clear Docker Local Registry') {
             steps {
-                sh "docker rmi -f elistarkhov/todoapp:${TODOAPP_VERSION}"
+                sh "docker rmi -f ${APP_IMAGE}:${TODOAPP_VERSION}"
+            }
+        }
+
+        stage('Update CD Repository') {
+            steps {                
+                script {
+                    git branch: 'main',
+                        credentialsId: 'github-deploy-key',
+                        url: "${CD_REPO}"
+
+                    def values = readYaml file: 'HelmCharts/MyChart/values.yaml'
+                    values.container.image = "${APP_IMAGE}:${TODOAPP_VERSION}-TEST3"
+                    writeYaml file: 'HelmCharts/MyChart/values.yaml', data: values, overwrite: true
+                }
+                sshagent (credentials: ['github-deploy-key']) {
+                    sh """
+                        git add HelmCharts/MyChart/values.yaml
+                        git commit -m "[Jenkins] Updated docker image tag - ${TODOAPP_VERSION}"
+                        git push "${CD_REPO}" main
+                    """
+                }
             }
         }
     }
