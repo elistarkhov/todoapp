@@ -23,7 +23,8 @@
                     <li><a href="#" th:href="@{/add-todo}">Add TODO</a></li>
                 </ul>
                 <ul class="nav navbar-nav">
-                    <span></span>
+                    <p>ServerAddress: </p>
+                    <span th:text="${hostname}">hostname</span>
                 </ul>
             </div>
         </nav>

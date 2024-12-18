@@ -41,6 +41,7 @@ public class ToDoController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("todos", toDoService.getAllTodos());
+        model.addAttribute("hostname", System.getenv("HOSTNAME"));
         return "index";
     }
 

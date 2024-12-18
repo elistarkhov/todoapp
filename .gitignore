@@ -1,4 +1,4 @@
-application-dev.yaml
+src/main/resources/application-dev.yaml
 catalina.home_IS_UNDEFINED/
 logs/
 .sbs/
