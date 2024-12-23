@@ -1,6 +1,6 @@
 
 def TODOAPP_VERSION
-def APP_IMAGE = 'elistarkhov/todoapp'
+def TODOAPP_IMAGE = 'elistarkhov/todoapp'
 def CD_REPO = 'git@github.com:elistarkhov/todoapp-argocd.git'
 
 pipeline {
@@ -33,21 +33,21 @@ pipeline {
 
         stage('Build Docker image') {
             steps {
-                sh "docker build -t ${APP_IMAGE}:${TODOAPP_VERSION} ."
+                sh "docker build -t ${TODOAPP_IMAGE}:${TODOAPP_VERSION} ."
             }
         }
         stage('Push Docker image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                sh "docker push ${APP_IMAGE}:${TODOAPP_VERSION}"
+                sh "docker push ${TODOAPP_IMAGE}:${TODOAPP_VERSION}"
                 }
             }
         }
 
         stage('Clear Docker Local Registry') {
             steps {
-                sh "docker rmi -f ${APP_IMAGE}:${TODOAPP_VERSION}"
+                sh "docker rmi -f ${TODOAPP_IMAGE}:${TODOAPP_VERSION}"
             }
         }
 
@@ -58,13 +58,13 @@ pipeline {
                         credentialsId: 'github-deploy-key',
                         url: "${CD_REPO}"
 
-                    def values = readYaml file: 'HelmCharts/AppChart/values.yaml'
-                    values.container.image = "${APP_IMAGE}:${TODOAPP_VERSION}"
-                    writeYaml file: 'HelmCharts/AppChart/values.yaml', data: values, overwrite: true
+                    def values = readYaml file: 'charts/app/values.yaml'
+                    values.app.image = "${TODOAPP_IMAGE}:${TODOAPP_VERSION}"
+                    writeYaml file: 'charts/app/values.yaml', data: values, overwrite: true
                 }
                 sshagent (credentials: ['github-deploy-key']) {
                     sh """
-                        git add HelmCharts/AppChart/values.yaml
+                        git add charts/app/values.yaml
                         git commit -m "[Jenkins] Updated docker image tag - ${TODOAPP_VERSION}"
                         git push "${CD_REPO}" main
                     """
