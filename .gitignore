@@ -3,7 +3,7 @@ catalina.home_IS_UNDEFINED/
 logs/
 .sbs/
 
-HELP.md
+
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -36,3 +36,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/HELP.md
